@@ -30,6 +30,7 @@ az deployment group create \
 echo "=== Obteniendo outputs ==="
 az deployment group show \
   --resource-group $RESOURCE_GROUP \
+  --name main \
   --query properties.outputs
 
 echo ""
