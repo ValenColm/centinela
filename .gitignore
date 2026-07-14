@@ -1,0 +1,10 @@
+.obsidian/
+__pycache__/
+*.pyc
+.env
+local.settings.json
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
