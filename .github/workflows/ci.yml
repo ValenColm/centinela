@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [main, valentina/infra, jesus/frontend, brallan/rules, daniel/backend]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install ruff
+      - run: ruff check . --ignore=E402,F401
+        continue-on-error: true
+
+  validate-bicep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/arm-deploy@v2
+        with:
+          deploymentScope: subscription
+          template: ./infra/main.bicep
+          parameters: ""
+        continue-on-error: true
