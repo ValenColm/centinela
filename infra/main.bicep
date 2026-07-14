@@ -14,35 +14,32 @@ resource storage 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   properties: {
     supportsHttpsTrafficOnly: true
     minimumTlsVersion: 'TLS1_2'
-    networkAcls: {
-      defaultAction: 'Allow'
-    }
   }
 }
 
 resource tableTransacciones 'Microsoft.Storage/storageAccounts/tableServices/tables@2023-01-01' = {
   name: '${storageName}/default/transacciones'
-  dependsOn: [storage]
+  parent: storage
 }
 
 resource tableCasos 'Microsoft.Storage/storageAccounts/tableServices/tables@2023-01-01' = {
   name: '${storageName}/default/casos'
-  dependsOn: [storage]
+  parent: storage
 }
 
 resource tableConfig 'Microsoft.Storage/storageAccounts/tableServices/tables@2023-01-01' = {
   name: '${storageName}/default/configuracion'
-  dependsOn: [storage]
+  parent: storage
 }
 
 resource queue 'Microsoft.Storage/storageAccounts/queueServices/queues@2023-01-01' = {
   name: '${storageName}/default/transacciones-pendientes'
-  dependsOn: [storage]
+  parent: storage
 }
 
 resource container 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-01-01' = {
   name: '${storageName}/default/verificaciones'
-  dependsOn: [storage]
+  parent: storage
 }
 
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
@@ -56,11 +53,11 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
 }
 
 resource kvSecretStorageConn 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
-  name: '${kvName}/StorageConnectionString'
+  name: 'StorageConnectionString'
+  parent: keyVault
   properties: {
     value: 'DefaultEndpointsProtocol=https;AccountName=${storage.name};AccountKey=${listKeys(storage.id, '2023-01-01').keys[0].value};EndpointSuffix=core.windows.net'
   }
-  dependsOn: [keyVault, storage]
 }
 
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
@@ -103,7 +100,6 @@ resource funcApi 'Microsoft.Web/sites@2022-09-01' = {
     }
   }
   identity: { type: 'SystemAssigned' }
-  dependsOn: [plan, appInsights, storage]
 }
 
 resource funcScoring 'Microsoft.Web/sites@2022-09-01' = {
@@ -122,47 +118,42 @@ resource funcScoring 'Microsoft.Web/sites@2022-09-01' = {
     }
   }
   identity: { type: 'SystemAssigned' }
-  dependsOn: [plan, appInsights, storage]
 }
 
-resource roleFuncApiStorage 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(funcApi.id, storage.id, 'contributor')
+resource roleApiStorage 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(funcApi.id, storage.id, 'storage')
   scope: storage
   properties: {
     principalId: funcApi.identity.principalId
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '17d1049b-9a84-46fb-8f53-869881c3d3ab')
   }
-  dependsOn: [funcApi, storage]
 }
 
-resource roleFuncApiKV 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(funcApi.id, keyVault.id, 'kvuser')
+resource roleApiKV 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(funcApi.id, keyVault.id, 'kv')
   scope: keyVault
   properties: {
     principalId: funcApi.identity.principalId
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4633458b-17de-408a-b874-0445c86b69e6')
   }
-  dependsOn: [funcApi, keyVault]
 }
 
-resource roleFuncScoringStorage 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(funcScoring.id, storage.id, 'contributor2')
+resource roleScoringStorage 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(funcScoring.id, storage.id, 'storage2')
   scope: storage
   properties: {
     principalId: funcScoring.identity.principalId
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '17d1049b-9a84-46fb-8f53-869881c3d3ab')
   }
-  dependsOn: [funcScoring, storage]
 }
 
-resource roleFuncScoringKV 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(funcScoring.id, keyVault.id, 'kvuser2')
+resource roleScoringKV 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(funcScoring.id, keyVault.id, 'kv2')
   scope: keyVault
   properties: {
     principalId: funcScoring.identity.principalId
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4633458b-17de-408a-b874-0445c86b69e6')
   }
-  dependsOn: [funcScoring, keyVault]
 }
 
 output storageName string = storageName
