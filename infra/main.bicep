@@ -1,7 +1,5 @@
 param location string = 'westus'
 param storageName string = 'stcentinela${uniqueString(resourceGroup().id)}'
-param funcApiName string = 'func-centinela-api-${uniqueString(resourceGroup().id)}'
-param funcScoringName string = 'func-centinela-scoring-${uniqueString(resourceGroup().id)}'
 param kvName string = 'kv-centinela-${uniqueString(resourceGroup().id)}'
 param appInsightsName string = 'appi-centinela-${uniqueString(resourceGroup().id)}'
 
@@ -55,13 +53,6 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
   }
 }
 
-resource plan 'Microsoft.Web/serverfarms@2022-09-01' = {
-  name: 'asp-centinela-${uniqueString(resourceGroup().id)}'
-  location: location
-  kind: 'functionapp'
-  sku: { name: 'Y1', tier: 'Dynamic' }
-}
-
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
   name: 'log-centinela-${uniqueString(resourceGroup().id)}'
   location: location
@@ -81,47 +72,7 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   dependsOn: [logAnalytics]
 }
 
-resource funcApi 'Microsoft.Web/sites@2022-09-01' = {
-  name: funcApiName
-  location: location
-  kind: 'functionapp'
-  properties: {
-    serverFarmId: plan.id
-    httpsOnly: true
-    siteConfig: {
-      linuxFxVersion: 'Python|3.11'
-      appSettings: [
-        { name: 'FUNCTIONS_WORKER_RUNTIME', value: 'python' }
-        { name: 'APPINSIGHTS_INSTRUMENTATIONKEY', value: appInsights.properties.InstrumentationKey }
-        { name: 'AZURE_STORAGE_ACCOUNT', value: storage.name }
-      ]
-    }
-  }
-  dependsOn: [plan, appInsights, storage]
-}
-
-resource funcScoring 'Microsoft.Web/sites@2022-09-01' = {
-  name: funcScoringName
-  location: location
-  kind: 'functionapp'
-  properties: {
-    serverFarmId: plan.id
-    httpsOnly: true
-    siteConfig: {
-      linuxFxVersion: 'Python|3.11'
-      appSettings: [
-        { name: 'FUNCTIONS_WORKER_RUNTIME', value: 'python' }
-        { name: 'APPINSIGHTS_INSTRUMENTATIONKEY', value: appInsights.properties.InstrumentationKey }
-        { name: 'AZURE_STORAGE_ACCOUNT', value: storage.name }
-      ]
-    }
-  }
-  dependsOn: [plan, appInsights, storage]
-}
-
 output storageName string = storageName
 output storageConnectionString string = 'DefaultEndpointsProtocol=https;AccountName=${storage.name};EndpointSuffix=core.windows.net'
 output queueName string = 'transacciones-pendientes'
-output funcApiEndpoint string = funcApi.properties.defaultHostName
-output funcScoringEndpoint string = funcScoring.properties.defaultHostName
 output keyVaultName string = kvName
