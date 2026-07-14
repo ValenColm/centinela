@@ -3,8 +3,6 @@ param suffix string = substring(uniqueString(resourceGroup().id), 0, 6)
 param storageName string = 'stcentinela${suffix}'
 param kvName string = 'kv-centinela-${suffix}'
 param appInsightsName string = 'appi-centinela-${suffix}'
-param funcApiName string = 'func-api-${suffix}'
-param funcScoringName string = 'func-scoring-${suffix}'
 
 resource storage 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   name: storageName
@@ -78,51 +76,7 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   }
 }
 
-resource plan 'Microsoft.Web/serverfarms@2022-09-01' = {
-  name: 'asp-centinela-${suffix}'
-  location: location
-  sku: { name: 'Y1', tier: 'Dynamic' }
-}
-
-resource funcApi 'Microsoft.Web/sites@2022-09-01' = {
-  name: funcApiName
-  location: location
-  kind: 'functionapp'
-  properties: {
-    serverFarmId: plan.id
-    httpsOnly: true
-    siteConfig: {
-      appSettings: [
-        { name: 'FUNCTIONS_WORKER_RUNTIME', value: 'python' }
-        { name: 'APPINSIGHTS_INSTRUMENTATIONKEY', value: appInsights.properties.InstrumentationKey }
-        { name: 'AzureWebJobsStorage__accountName', value: storage.name }
-      ]
-    }
-  }
-  identity: { type: 'SystemAssigned' }
-}
-
-resource funcScoring 'Microsoft.Web/sites@2022-09-01' = {
-  name: funcScoringName
-  location: location
-  kind: 'functionapp'
-  properties: {
-    serverFarmId: plan.id
-    httpsOnly: true
-    siteConfig: {
-      appSettings: [
-        { name: 'FUNCTIONS_WORKER_RUNTIME', value: 'python' }
-        { name: 'APPINSIGHTS_INSTRUMENTATIONKEY', value: appInsights.properties.InstrumentationKey }
-        { name: 'AzureWebJobsStorage__accountName', value: storage.name }
-      ]
-    }
-  }
-  identity: { type: 'SystemAssigned' }
-}
-
 output storageName string = storageName
 output queueName string = 'transacciones-pendientes'
 output keyVaultName string = kvName
 output keyVaultSecretName string = 'StorageConnectionString'
-output funcApiEndpoint string = funcApi.properties.defaultHostName
-output funcScoringEndpoint string = funcScoring.properties.defaultHostName
