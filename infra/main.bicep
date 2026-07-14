@@ -120,42 +120,6 @@ resource funcScoring 'Microsoft.Web/sites@2022-09-01' = {
   identity: { type: 'SystemAssigned' }
 }
 
-resource roleApiStorage 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(funcApi.id, storage.id, 'storage')
-  scope: storage
-  properties: {
-    principalId: funcApi.identity.principalId
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '17d1049b-9a84-46fb-8f53-869881c3d3ab')
-  }
-}
-
-resource roleApiKV 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(funcApi.id, keyVault.id, 'kv')
-  scope: keyVault
-  properties: {
-    principalId: funcApi.identity.principalId
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4633458b-17de-408a-b874-0445c86b69e6')
-  }
-}
-
-resource roleScoringStorage 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(funcScoring.id, storage.id, 'storage2')
-  scope: storage
-  properties: {
-    principalId: funcScoring.identity.principalId
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '17d1049b-9a84-46fb-8f53-869881c3d3ab')
-  }
-}
-
-resource roleScoringKV 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(funcScoring.id, keyVault.id, 'kv2')
-  scope: keyVault
-  properties: {
-    principalId: funcScoring.identity.principalId
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4633458b-17de-408a-b874-0445c86b69e6')
-  }
-}
-
 output storageName string = storageName
 output queueName string = 'transacciones-pendientes'
 output keyVaultName string = kvName
