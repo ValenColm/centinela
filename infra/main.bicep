@@ -54,6 +54,14 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
   }
 }
 
+resource kvSecretStorageConn 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
+  name: '${kvName}/StorageConnectionString'
+  properties: {
+    value: 'DefaultEndpointsProtocol=https;AccountName=${storage.name};AccountKey=${listKeys(storage.id, '2023-01-01').keys[0].value};EndpointSuffix=core.windows.net'
+  }
+  dependsOn: [keyVault, storage]
+}
+
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
   name: 'log-centinela-${suffix}'
   location: location
@@ -73,6 +81,6 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
 }
 
 output storageName string = storageName
-output storageConnectionString string = 'DefaultEndpointsProtocol=https;AccountName=${storage.name};EndpointSuffix=core.windows.net'
 output queueName string = 'transacciones-pendientes'
 output keyVaultName string = kvName
+output keyVaultSecretName string = 'StorageConnectionString'
