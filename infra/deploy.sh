@@ -2,7 +2,7 @@
 set -euo pipefail
 
 RESOURCE_GROUP="rg-centinela"
-LOCATION="eastus"
+LOCATION="westus"
 
 echo "=== Verificando Azure CLI ==="
 az account show --query id -o tsv
