@@ -291,6 +291,55 @@ Meta del proyecto: gastar menos de $60 USD de los $200 de crédito.
 
 ---
 
+---
+
+## Flujo de trabajo con Git y CI/CD
+
+### Cómo trabajamos
+
+```
+Cada uno en su rama:
+  Jesús (jesus/frontend)  ──┐
+  Brallan (brallan/rules) ──┤
+  Daniel (daniel/backend) ──┤
+  Valentina (valentina/infra) ──┤
+                              │
+                    Abren Pull Request (PR) a main
+                              │
+                    Valentina revisa y aprueba
+                              │
+                    Merge a main
+                              │
+                    GitHub Actions deploya solo a Azure
+```
+
+### Reglas del flujo
+
+1. **Cada uno trabaja en su propia rama.** Nadie toca `main` directamente.
+2. **Cuando algo funciona** (una funcionalidad completa, no a mitad de camino), se abre un Pull Request en GitHub desde tu rama hacia `main`.
+3. **Siempre asignar a Valentina como reviewer** del PR. Ella revisa el código, verifica que no haya errores y decide si se mergea.
+4. **Nadie hace merge de su propio PR.** Solo Valentina aprueba y mergea.
+5. **Cuando se mergea a `main`, GitHub Actions se activa automáticamente:**
+   - Corre `ruff` para verificar que el código no tenga errores de sintaxis
+   - Despliega la infraestructura con Bicep en Azure
+   - Despliega el código de las Azure Functions
+6. **Si el pipeline falla**, llega una notificación en GitHub y hay que revisar qué pasó antes de mergear otra cosa.
+
+### Lo que NO cambia
+
+- Seguimos usando Discord/WhatsApp para coordinar
+- Si alguien necesita el código de otro (ej: Jesús necesita los endpoints de Brallan), puede mergear `main` a su rama para traer los cambios
+- Si dos personas necesitan modificar el mismo archivo, se coordinan para no pisarse
+
+### La responsabilidad de Valentina
+
+- Es la **única que mergea PRs a `main`**
+- Es la **dueña de Azure**: secrets, Service Principal, cuenta gratuita
+- Configura el CI/CD (GitHub Actions) y los secrets necesarios
+- Revisa que el pipeline no esté quemando crédito al pedo
+
+---
+
 ## Reglas que NO debemos olvidar
 
 1. **Ningún secreto en el código.** Todo connection string, API key o contraseña va a Key Vault.

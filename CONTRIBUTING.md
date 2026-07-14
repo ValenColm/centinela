@@ -2,13 +2,13 @@
 
 ## Ramas
 
-| Rama | Dueño | Propósito |
-|---|---|---|
-| `main` | Todos | Código estable. Solo se mergea por PR con revisión |
-| `valentina/infra` | Valentina | Infraestructura Azure (Bicep, scripts, CI/CD) |
-| `jesus/frontend` | Jesús | Frontend (templates Jinja2, login, paneles) |
-| `brallan/rules` | Brallan | Reglas de detección, persistencia, admin API |
-| `daniel/backend` | Daniel | API, motor scoring, explicador, verificación documental, seguridad |
+| Rama                | Dueño    | Propósito                                                          |
+| ------------------- | --------- | ------------------------------------------------------------------- |
+| `main`            | Todos     | Código estable. Solo se mergea por PR con revisión                |
+| `valentina/infra` | Valentina | Infraestructura Azure (Bicep, scripts, CI/CD)                       |
+| `jesus/frontend`  | Jesús    | Frontend (templates Jinja2, login, paneles)                         |
+| `brallan/rules`   | Brallan   | Reglas de detección, persistencia, admin API                       |
+| `daniel/backend`  | Daniel    | API, motor scoring, explicador, verificación documental, seguridad |
 
 ## Flujo diario
 
@@ -28,14 +28,20 @@ git push
 
 ## Pull Requests (PR)
 
-Al final de cada semana (o cuando una funcionalidad esté completa):
+Cuando una funcionalidad esté completa:
 
-1. Ir a GitHub y abrir un PR desde tu rama hacia `main`
-2. Asignar a otro miembro del equipo como reviewer
-3. El reviewer revisa, comenta si hay algo, y aprueba
-4. Hacer merge a `main`
+1. Ir a GitHub y abrir un **Pull Request desde tu rama hacia `main`**
+2. **Asignar a `ValenColm` (Valentina) como reviewer**
+3. Escribir un título descriptivo: `feat: agregar regla de velocidad` o `fix: corregir calculo de distancia`
+4. Valentina revisa el código, comenta si hay algo, y aprueba
+5. **Solo Valentina hace el merge a `main`** — nadie mergea su propio PR
+6. Al mergear, GitHub Actions despliega automáticamente a Azure
 
 ## Reglas
+
+- **Nunca hacer push directo a `main`**. Siempre por PR.
+- **Solo Valentina aprueba y mergea PRs**.
+- **Los commits deben ser descriptivos**:
 
 - **Nunca hacer push directo a `main`**. Siempre por PR.
 - **Los commits deben ser descriptivos**:
