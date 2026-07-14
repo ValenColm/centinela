@@ -2,13 +2,15 @@
 
 ## Ramas
 
-| Rama                | Dueño    | Propósito                                                          |
-| ------------------- | --------- | ------------------------------------------------------------------- |
-| `main`            | Todos     | Código estable. Solo se mergea por PR con revisión                |
-| `valentina/infra` | Valentina | Infraestructura Azure (Bicep, scripts, CI/CD)                       |
-| `jesus/frontend`  | Jesús    | Frontend (templates Jinja2, login, paneles)                         |
-| `brallan/rules`   | Brallan   | Reglas de detección, persistencia, admin API                       |
-| `daniel/backend`  | Daniel    | API, motor scoring, explicador, verificación documental, seguridad |
+| Rama | Dueño | Propósito |
+|---|---|---|---|
+| `main` | Todos | Código estable. Solo se mergea por PR con revisión |
+| `valentina/infra` | Valentina | Infraestructura Azure (Bicep, scripts, CI/CD) |
+| (la que elija) | Jesús | Frontend (templates Jinja2, login, paneles) |
+| (la que elija) | Brallan | Reglas de detección, persistencia, admin API |
+| (la que elija) | Daniel | API, motor scoring, explicador, verificación documental, seguridad |
+
+Cada uno crea su propia rama con `git checkout -b <nombre-rama>` y la sube con `git push -u origin <nombre-rama>`.
 
 ## Flujo diario
 

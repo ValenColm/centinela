@@ -298,19 +298,19 @@ Meta del proyecto: gastar menos de $60 USD de los $200 de crédito.
 ### Cómo trabajamos
 
 ```
-Cada uno en su rama:
-  Jesús (jesus/frontend)  ──┐
-  Brallan (brallan/rules) ──┤
-  Daniel (daniel/backend) ──┤
-  Valentina (valentina/infra) ──┤
-                              │
-                    Abren Pull Request (PR) a main
-                              │
-                    Valentina revisa y aprueba
-                              │
-                    Merge a main
-                              │
-                    GitHub Actions deploya solo a Azure
+Cada uno crea su rama:
+  Jesús (jesus/frontend o el nombre que elija)  ──┐
+  Brallan (brallan/rules o el nombre que elija)  ──┤
+  Daniel (daniel/backend o el nombre que elija)  ──┤
+  Valentina (valentina/infra o el nombre que elija)  ──┤
+                                                    │
+                              Abren Pull Request (PR) a main
+                                                    │
+                              Valentina revisa y aprueba
+                                                    │
+                              Merge a main
+                                                    │
+                              GitHub Actions deploya solo a Azure
 ```
 
 ### Reglas del flujo
