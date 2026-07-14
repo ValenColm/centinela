@@ -51,8 +51,8 @@ az role assignment create --assignee $API_PRINCIPAL --role "Key Vault Secrets Us
 az role assignment create --assignee $SCORING_PRINCIPAL --role "Key Vault Secrets User" --scope $KV_ID
 
 echo "=== Configurando HTTPS forzado ==="
-az functionapp config set --name "func-api-$SUFFIX" --resource-group $RESOURCE_GROUP --https-only true
-az functionapp config set --name "func-scoring-$SUFFIX" --resource-group $RESOURCE_GROUP --https-only true
+az functionapp update --name "func-api-$SUFFIX" --resource-group $RESOURCE_GROUP --set httpsOnly=true
+az functionapp update --name "func-scoring-$SUFFIX" --resource-group $RESOURCE_GROUP --set httpsOnly=true
 
 echo ""
 echo "=== Functions creadas ==="
