@@ -1,7 +1,8 @@
 param location string = 'westus'
-param storageName string = 'stcentinela${uniqueString(resourceGroup().id)}'
-param kvName string = 'kv-centinela-${uniqueString(resourceGroup().id)}'
-param appInsightsName string = 'appi-centinela-${uniqueString(resourceGroup().id)}'
+param suffix string = substring(uniqueString(resourceGroup().id), 0, 6)
+param storageName string = 'stcentinela${suffix}'
+param kvName string = 'kv-centinela-${suffix}'
+param appInsightsName string = 'appi-centinela-${suffix}'
 
 resource storage 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   name: storageName
@@ -54,7 +55,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
 }
 
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
-  name: 'log-centinela-${uniqueString(resourceGroup().id)}'
+  name: 'log-centinela-${suffix}'
   location: location
   properties: {
     sku: { name: 'PerGB2018' }
