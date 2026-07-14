@@ -19,27 +19,27 @@ resource storage 'Microsoft.Storage/storageAccounts@2023-01-01' = {
 
 resource tableTransacciones 'Microsoft.Storage/storageAccounts/tableServices/tables@2023-01-01' = {
   name: '${storageName}/default/transacciones'
-  parent: storage
+  dependsOn: [storage]
 }
 
 resource tableCasos 'Microsoft.Storage/storageAccounts/tableServices/tables@2023-01-01' = {
   name: '${storageName}/default/casos'
-  parent: storage
+  dependsOn: [storage]
 }
 
 resource tableConfig 'Microsoft.Storage/storageAccounts/tableServices/tables@2023-01-01' = {
   name: '${storageName}/default/configuracion'
-  parent: storage
+  dependsOn: [storage]
 }
 
 resource queue 'Microsoft.Storage/storageAccounts/queueServices/queues@2023-01-01' = {
   name: '${storageName}/default/transacciones-pendientes'
-  parent: storage
+  dependsOn: [storage]
 }
 
 resource container 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-01-01' = {
   name: '${storageName}/default/verificaciones'
-  parent: storage
+  dependsOn: [storage]
 }
 
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
@@ -53,11 +53,11 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
 }
 
 resource kvSecretStorageConn 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
-  name: 'StorageConnectionString'
-  parent: keyVault
+  name: '${kvName}/StorageConnectionString'
   properties: {
     value: 'DefaultEndpointsProtocol=https;AccountName=${storage.name};AccountKey=${listKeys(storage.id, '2023-01-01').keys[0].value};EndpointSuffix=core.windows.net'
   }
+  dependsOn: [keyVault, storage]
 }
 
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
