@@ -1,4 +1,4 @@
-param location string = 'eastus'
+param location string = 'westus'
 param storageName string = 'stcentinela${uniqueString(resourceGroup().id)}'
 param funcApiName string = 'func-centinela-api-${uniqueString(resourceGroup().id)}'
 param funcScoringName string = 'func-centinela-scoring-${uniqueString(resourceGroup().id)}'

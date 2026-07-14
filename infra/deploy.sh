@@ -16,6 +16,7 @@ az provider register --namespace Microsoft.OperationalInsights --output none
 
 echo "=== Verificando cuota disponible ==="
 az vm list-usage --location $LOCATION --output table 2>/dev/null || echo "No se pudo verificar cuota"
+echo "Si falla por cuota, probá: az vm quota increase --location westus"
 
 echo "=== Creando Resource Group ==="
 az group create --name $RESOURCE_GROUP --location $LOCATION --output none
