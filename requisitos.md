@@ -340,6 +340,98 @@ Cada uno en su rama:
 
 ---
 
+## Dependencias entre miembros del equipo
+
+Entender quién necesita qué de quién es clave para no pisarse ni bloquearse.
+
+### Valentina — Infraestructura
+
+| Depende de | Para qué | ¿Puede avanzar sin eso? |
+|---|---|---|
+| Nadie | Empieza sola desde el día 1 | Sí |
+
+| Dependen de ella | Para qué | Urgencia |
+|---|---|---|
+| **Brallan** | Storage Account y tablas para persistir datos | Semana 1 (día 2-3) |
+| **Daniel** | Queue Storage para encolar transacciones | Semana 1 (día 2-3) |
+| **Todos** | Function Apps y Key Vault para desplegar | Semana 2+ |
+
+**Valentina es el cuello de botella del equipo.** Si se atrasa, todos se atrasan. Priorizar:
+1. Storage Account (Table + Queue + Blob) — día 1-2
+2. Key Vault — día 2-3
+3. Function Apps — día 3-4
+4. App Insights — día 5-6
+5. CI/CD — día 5-7
+
+### Jesús — Frontend
+
+| Depende de | Para qué | ¿Puede avanzar sin eso? |
+|---|---|---|
+| **Daniel** (semana 2-3) | Endpoints de casos, transacciones y admin | Sí, con datos mockeados |
+| **Valentina** | Function App para desplegar | Sí, trabaja local |
+
+| Dependen de él | Para qué |
+|---|---|
+| Nadie | Consume APIs de los demás, nadie lo necesita a él |
+
+**Jesús es el más independiente.** Puede avanzar tranquilo las primeras 2 semanas con datos falsos. Solo necesita a los demás para integrar al final.
+
+### Brallan — Reglas y Persistencia
+
+| Depende de | Para qué | ¿Puede avanzar sin eso? |
+|---|---|---|
+| **Valentina** | Connection string / Managed Identity para Storage | Sí, escribe capa abstracta primero |
+| **Daniel** (semana 2) | Transacciones guardadas para consultar historial | Sí, usa datos mockeados |
+
+| Dependen de él | Para qué |
+|---|---|
+| **Daniel** (semana 2) | El motor de scoring necesita llamar a las reglas de Brallan |
+| **Jesús** | Los endpoints admin (umbral, reglas, comercios) los expone Brallan |
+
+**Brallan puede escribir persistencia y esqueletos de reglas en local.** La integración real necesita a Valentina (Storage) y Daniel (datos).
+
+### Daniel — Backend
+
+| Depende de | Para qué | ¿Puede avanzar sin eso? |
+|---|---|---|
+| **Valentina** | Queue Storage para publicar eventos | Sí, usa mock/local |
+| **Brallan** (semana 2) | Reglas implementadas para el motor de scoring | Limitado — puede hacer el orquestador pero no probar |
+
+| Dependen de él | Para qué |
+|---|---|
+| **Jesús** | Consume endpoints de casos y transacciones |
+| **Brallan** | Sus reglas leen transacciones que persiste Daniel |
+
+**Daniel puede escribir toda la API en semana 1 sin depender de nadie.** En semana 2 necesita las reglas de Brallan para completar el motor.
+
+### Mapa de dependencias por semana
+
+```
+Semana 1:
+  Valentina ─────────────────────────────────→ (independiente, crítica)
+  Brallan ──→ necesita Storage de Valentina   (puede esperar 2-3 días)
+  Daniel ───→ necesita Queue de Valentina     (puede esperar 2-3 días)
+  Jesús ────→ trabaja con datos mockeados     (no bloqueado)
+
+Semana 2:
+  Daniel ──→ Brallan (reglas implementadas)
+  Jesús ───→ Daniel (endpoints de casos listos)
+
+Semana 3:
+  Daniel ──→ Brallan (evidencia de reglas para el explicador)
+  Jesús ───→ Daniel (endpoints admin funcionando)
+```
+
+### Estrategia para no bloquearse
+
+1. **Día 1: definir contratos.** Todos se sientan (virtual) y acuerdan los formatos JSON de transacción, evento, score y caso. Con eso cada uno sabe qué espera recibir y qué debe devolver.
+2. **Cada uno trabaja local con datos mockeados** hasta que Valentina tenga la infra lista.
+3. **Valentina prioriza Storage (Table + Queue)** primero. Functions y App Insights pueden esperar a final de semana 1.
+4. **Fin de semana 1: integración temprana.** Hacen deploy de todo y prueban que API → Queue → Storage funcione. Sin reglas todavía.
+5. **Comunicación constante.** Si alguien se bloquea, avisa al grupo al toque, no espera días.
+
+---
+
 ## Reglas que NO debemos olvidar
 
 1. **Ningún secreto en el código.** Todo connection string, API key o contraseña va a Key Vault.
