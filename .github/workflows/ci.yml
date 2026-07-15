@@ -38,3 +38,7 @@ jobs:
             --resource-group rg-centinela \
             --template-file infra/main.bicep \
             --output table
+
+      # Nota: create-functions.sh se corre manualmente (Valentina)
+      # porque el SP de CI no tiene permisos para asignar roles RBAC.
+      # Comando: bash infra/create-functions.sh
