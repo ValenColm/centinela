@@ -34,4 +34,13 @@ az deployment group show \
   --query properties.outputs
 
 echo ""
+echo "=== Creando Functions vía CLI ==="
+SCRIPT_DIR="$(dirname "$0")"
+if [ -f "$SCRIPT_DIR/create-functions.sh" ]; then
+  bash "$SCRIPT_DIR/create-functions.sh"
+else
+  echo "ERROR: create-functions.sh no encontrado en $SCRIPT_DIR"
+  exit 1
+fi
+
 echo "=== Deploy completado ==="
