@@ -21,10 +21,12 @@ echo "Si falla por cuota, probá: az vm quota increase --location westus"
 echo "=== Creando Resource Group ==="
 az group create --name $RESOURCE_GROUP --location $LOCATION --output none
 
+SCRIPT_DIR="$(dirname "$0")"
+
 echo "=== Desplegando infraestructura ==="
 az deployment group create \
   --resource-group $RESOURCE_GROUP \
-  --template-file main.bicep \
+  --template-file "$SCRIPT_DIR/main.bicep" \
   --output table
 
 echo "=== Obteniendo outputs ==="
@@ -35,7 +37,6 @@ az deployment group show \
 
 echo ""
 echo "=== Creando Functions vía CLI ==="
-SCRIPT_DIR="$(dirname "$0")"
 if [ -f "$SCRIPT_DIR/create-functions.sh" ]; then
   bash "$SCRIPT_DIR/create-functions.sh"
 else
