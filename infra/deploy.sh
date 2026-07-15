@@ -23,17 +23,14 @@ az group create --name $RESOURCE_GROUP --location $LOCATION --output none
 
 SCRIPT_DIR="$(dirname "$0")"
 
+DEPLOY_NAME="centinela-$(date +%s)"
+
 echo "=== Desplegando infraestructura ==="
 az deployment group create \
   --resource-group $RESOURCE_GROUP \
+  --name $DEPLOY_NAME \
   --template-file "$SCRIPT_DIR/main.bicep" \
   --output table
-
-echo "=== Obteniendo outputs ==="
-az deployment group show \
-  --resource-group $RESOURCE_GROUP \
-  --name main \
-  --query properties.outputs
 
 echo ""
 echo "=== Creando Functions vía CLI ==="
