@@ -36,6 +36,7 @@ jobs:
         run: |
           az deployment group create \
             --resource-group rg-centinela \
+            --name centinela-ci-${{ github.run_id }} \
             --template-file infra/main.bicep \
             --output table
 
