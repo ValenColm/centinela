@@ -2,7 +2,13 @@
 
 **Motor de detección de fraude transaccional en tiempo real.**
 
-Cada vez que un cliente de la fintech hace una compra, transferencia o retiro, Centinela analiza la transacción, aplica reglas de riesgo, asigna un puntaje y decide si es sospechosa.
+Una fintech procesa transacciones de tarjetas y transferencias, y está perdiendo
+dinero por fraude. Centinela vigila ese flujo, analiza cada transacción contra
+reglas de riesgo, calcula un score y decide en milisegundos:
+
+- **Score bajo** → la transacción sigue su curso normal. El cliente ni se entera.
+- **Score alto** → la transacción se marca, se abre un caso de fraude, y un
+  analista humano lo revisa con toda la evidencia en la mano.
 
 ---
 
