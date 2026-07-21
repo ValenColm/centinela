@@ -21,17 +21,24 @@ echo "Si falla por cuota, probá: az vm quota increase --location westus"
 echo "=== Creando Resource Group ==="
 az group create --name $RESOURCE_GROUP --location $LOCATION --output none
 
+SCRIPT_DIR="$(dirname "$0")"
+
+DEPLOY_NAME="centinela-$(date +%s)"
+
 echo "=== Desplegando infraestructura ==="
 az deployment group create \
   --resource-group $RESOURCE_GROUP \
-  --template-file main.bicep \
+  --name $DEPLOY_NAME \
+  --template-file "$SCRIPT_DIR/main.bicep" \
   --output table
 
-echo "=== Obteniendo outputs ==="
-az deployment group show \
-  --resource-group $RESOURCE_GROUP \
-  --name main \
-  --query properties.outputs
-
 echo ""
+echo "=== Creando Functions vía CLI ==="
+if [ -f "$SCRIPT_DIR/create-functions.sh" ]; then
+  bash "$SCRIPT_DIR/create-functions.sh"
+else
+  echo "ERROR: create-functions.sh no encontrado en $SCRIPT_DIR"
+  exit 1
+fi
+
 echo "=== Deploy completado ==="
