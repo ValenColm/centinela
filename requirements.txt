@@ -1,0 +1,7 @@
+azure-data-tables==12.6.0
+azure-storage-queue==12.12.0
+azure-storage-blob==12.24.1
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+pydantic==2.10.4
+python-dotenv==1.0.1
