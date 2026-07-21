@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 from enum import Enum
 
 from azure.data.tables import TableServiceClient, TableEntity
+from azure.identity import DefaultAzureCredential
 
 from .models import (
     AuditEntry,
@@ -17,22 +18,24 @@ from .models import (
 )
 
 
-def _get_connection_string() -> str:
-    conn_str = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
-    if not conn_str:
-        raise ValueError(
-            "AZURE_STORAGE_CONNECTION_STRING environment variable not set"
-        )
-    return conn_str
-
-
 def _get_service_client() -> TableServiceClient:
-    return TableServiceClient.from_connection_string(_get_connection_string())
+    conn_str = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
+    if conn_str:
+        return TableServiceClient.from_connection_string(conn_str)
+
+    account_name = os.getenv("AZURE_STORAGE_ACCOUNT")
+    if account_name:
+        table_url = f"https://{account_name}.table.core.windows.net"
+        return TableServiceClient(endpoint=table_url, credential=DefaultAzureCredential())
+
+    raise ValueError(
+        "Neither AZURE_STORAGE_CONNECTION_STRING nor AZURE_STORAGE_ACCOUNT is set"
+    )
 
 
-TABLE_TRANSACCIONES = "Transacciones"
-TABLE_CASOS = "Casos"
-TABLE_CONFIG = "Configuracion"
+TABLE_TRANSACCIONES = "transacciones"
+TABLE_CASOS = "casos"
+TABLE_CONFIG = "configuracion"
 
 
 # ── Transacciones ────────────────────────────────────────
