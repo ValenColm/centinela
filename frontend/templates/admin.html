@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Configuración del Sistema — Centinela{% endblock %}
+
+{% block content %}
+<h1 class="section-title">Configuración Administrativa</h1>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+  <!-- Section 1: Score Threshold -->
+  <div class="card">
+    <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem;">Umbral de Score</h2>
+    <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">
+      Las transacciones que superen este valor generarán un caso automático de fraude para el análisis.
+    </p>
+    
+    <form action="/admin/umbral" method="post" style="display: flex; flex-direction: column; gap: 1rem;">
+      <div class="form-group">
+        <label for="umbral" class="form-label">Valor del Umbral (0 - 100)</label>
+        <input type="number" id="umbral" name="umbral" class="form-control" min="0" max="100" value="{{ config.umbral }}" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Guardar Umbral</button>
+    </form>
+  </div>
+
+  <!-- Section 2: Detection Rules Status -->
+  <div class="card">
+    <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem;">Reglas de Detección</h2>
+    <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">
+      Activa o desactiva las reglas heurísticas que evalúan el score de la transacción.
+    </p>
+
+    <form action="/admin/reglas" method="post" style="display: flex; flex-direction: column; gap: 1rem;">
+      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        {% for regla in config.reglas %}
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background-color: var(--bg-secondary); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+          <div>
+            <div style="font-weight: 600; font-size: 0.9rem;">{{ regla.nombre | replace('_', ' ') | title }}</div>
+            <div style="font-size: 0.75rem; color: var(--text-secondary);">Suma: <strong class="text-danger">+{{ regla.puntos }} Pts</strong></div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <input type="checkbox" id="regla_{{ regla.nombre }}" name="regla_{{ regla.nombre }}" {% if regla.activa %}checked{% endif %} style="width: 1.2rem; height: 1.2rem; cursor: pointer; accent-color: var(--primary);">
+            <label for="regla_{{ regla.nombre }}" style="font-size: 0.8rem; font-weight: 500; cursor: pointer;">
+              {% if regla.activa %}Activa{% else %}Inactiva{% endif %}
+            </label>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <button type="submit" class="btn btn-primary" style="margin-top: 0.5rem;">Actualizar Reglas</button>
+    </form>
+  </div>
+</div>
+
+<!-- Section 3: Risk Merchants Management -->
+<div class="card">
+  <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem;">Comercios y Categorías de Riesgo</h2>
+  <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">
+    Transacciones dirigidas a estos comercios o categorías de negocio sumarán puntos de riesgo de forma automática.
+  </p>
+
+  <div style="display: flex; flex-wrap: wrap; gap: 2rem;">
+    <!-- Add Merchant Form -->
+    <div style="flex: 1; min-width: 280px;">
+      <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-secondary);">Registrar Comercio</h3>
+      
+      <form action="/admin/comercios" method="post" style="display: flex; flex-direction: column; gap: 1rem;">
+        <div class="form-group">
+          <label for="merchant_id" class="form-label">ID del Comercio</label>
+          <input type="text" id="merchant_id" name="merchant_id" class="form-control" placeholder="Ej: M999" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="name" class="form-label">Nombre del Comercio</label>
+          <input type="text" id="name" name="name" class="form-control" placeholder="Ej: Casino Fantasy" required>
+        </div>
+
+        <div class="form-group">
+          <label for="category" class="form-label">Categoría de Riesgo</label>
+          <select id="category" name="category" class="form-control">
+            <option value="casino">Casino y Apuestas</option>
+            <option value="crypto">Criptomonedas</option>
+            <option value="retail">Venta Minorista (Retail)</option>
+            <option value="luxury">Artículos de Lujo</option>
+            <option value="unknown">Desconocida</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Registrar Comercio</button>
+      </form>
+    </div>
+
+    <!-- Merchants List -->
+    <div style="flex: 2; min-width: 320px;">
+      <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-secondary);">Comercios en Lista de Riesgo</h3>
+      
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID Comercio</th>
+              <th>Nombre</th>
+              <th>Categoría</th>
+              <th style="text-align: right;">Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for comercio in config.comercios %}
+            <tr>
+              <td><code>{{ comercio.merchant_id }}</code></td>
+              <td style="font-weight: 600;">{{ comercio.name }}</td>
+              <td><span class="badge" style="background-color: var(--bg-tertiary); color: var(--text-primary);">{{ comercio.category }}</span></td>
+              <td style="text-align: right;">
+                <form action="/admin/comercios/{{ comercio.merchant_id }}/eliminar" method="post" style="display: inline;">
+                  <button type="submit" class="btn btn-danger" style="padding: 0.35rem 0.75rem; font-size: 0.75rem;">Eliminar</button>
+                </form>
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="4" class="text-center" style="color: var(--text-muted); padding: 2rem;">No hay comercios de riesgo registrados.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
