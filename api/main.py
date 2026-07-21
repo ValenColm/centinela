@@ -13,6 +13,7 @@ from api.models import (
     UserSession, RuleConfig, MerchantConfig, SystemConfig, 
     AuditLogEntry, RuleEvidence, Case
 )
+from api.admin import router as admin_router
 from api.middleware import AuthAndSecurityMiddleware, JWT_SECRET, JWT_ALGORITHM
 
 # Create upload directory
@@ -20,6 +21,9 @@ UPLOAD_DIR = "frontend/static/uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 app = FastAPI(title="Centinela API & Frontend")
+
+# Register routers
+app.include_router(admin_router)
 
 # Register middleware
 app.add_middleware(AuthAndSecurityMiddleware)
