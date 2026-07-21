@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — Centinela</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body class="login-body">
+  <div class="login-card">
+    <div class="login-header">
+      <div class="login-logo"><span class="brand-accent">CENTINELA</span></div>
+      <div class="login-subtitle">Motor de Detección de Fraude</div>
+    </div>
+
+    {% if error %}
+    <div class="alert alert-danger">
+      {{ error }}
+    </div>
+    {% endif %}
+
+    <form action="/login" method="post">
+      <div class="form-group">
+        <label for="username" class="form-label">Usuario</label>
+        <input type="text" id="username" name="username" class="form-control" placeholder="Ingresa tu usuario" required autocomplete="username">
+      </div>
+      
+      <div class="form-group" style="margin-bottom: 2rem;">
+        <label for="password" class="form-label">Contraseña</label>
+        <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem;">Iniciar Sesión</button>
+    </form>
+    
+    <div style="margin-top: 1.5rem; text-align: center; font-size: 0.8rem; color: var(--text-muted);">
+      Prueba con: admin / admin123, analyst / analyst123, auditor / auditor123
+    </div>
+  </div>
+</body>
+</html>

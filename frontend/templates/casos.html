@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Casos de Fraude — Centinela{% endblock %}
+
+{% block content %}
+<div class="stat-section mb-4">
+  <h1 class="section-title">Panel de Casos de Fraude</h1>
+  
+  <!-- Dashboard Grid Stats -->
+  <div class="dashboard-grid">
+    <div class="card stat-card">
+      <div>
+        <div class="stat-title">Casos Abiertos</div>
+        <div class="stat-value text-danger">4</div>
+      </div>
+      <div class="stat-icon" style="background-color: var(--danger-bg); color: var(--danger);">🚨</div>
+    </div>
+    
+    <div class="card stat-card">
+      <div>
+        <div class="stat-title">En Revisión</div>
+        <div class="stat-value text-warning">2</div>
+      </div>
+      <div class="stat-icon" style="background-color: var(--warning-bg); color: var(--warning);">⏳</div>
+    </div>
+    
+    <div class="card stat-card">
+      <div>
+        <div class="stat-title">Confirmados Fraude</div>
+        <div class="stat-value text-success">12</div>
+      </div>
+      <div class="stat-icon" style="background-color: var(--success-bg); color: var(--success);">🛡️</div>
+    </div>
+
+    <div class="card stat-card">
+      <div>
+        <div class="stat-title">Falsos Positivos</div>
+        <div class="stat-value" style="color: var(--info);">8</div>
+      </div>
+      <div class="stat-icon" style="background-color: var(--info-bg); color: var(--info);">✅</div>
+    </div>
+  </div>
+</div>
+
+<!-- Cases List Card -->
+<div class="card">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+    <h2 style="font-size: 1.25rem; font-weight: 600;">Casos Recientes</h2>
+    <div style="font-size: 0.85rem; color: var(--text-secondary);">Umbral del Sistema: <strong class="text-warning">60</strong></div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID del Caso</th>
+          <th>ID Cuenta</th>
+          <th>Score</th>
+          <th>Fecha Creación</th>
+          <th>Estado</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for caso in casos %}
+        <tr>
+          <td><code style="color: #a78bfa; font-weight: 600;">{{ caso.case_id }}</code></td>
+          <td>{{ caso.account_id }}</td>
+          <td>
+            <strong class="{% if caso.score >= 80 %}text-danger{% else %}text-warning{% endif %}">
+              {{ caso.score }}
+            </strong>
+          </td>
+          <td>{{ caso.creado_en }}</td>
+          <td>
+            <span class="badge badge-{% if caso.estado == 'abierto' %}open{% elif caso.estado == 'en_revision' %}review{% else %}resolved{% endif %}">
+              {{ caso.estado | replace('_', ' ') }}
+            </span>
+          </td>
+          <td>
+            <a href="/casos/{{ caso.case_id }}" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Ver Detalle</a>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6" class="text-center" style="color: var(--text-muted); padding: 2rem;">No hay casos registrados en el sistema.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

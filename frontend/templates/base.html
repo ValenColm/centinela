@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Centinela{% endblock %}</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  <!-- Navbar -->
+  <header class="navbar">
+    <a href="/" class="brand">
+      <span class="brand-accent">CENTINELA</span>
+    </a>
+    <div class="user-profile">
+      <div class="user-info">
+        <div class="username">{{ current_user.name }}</div>
+        <div class="user-role">
+          <span class="badge badge-{{ current_user.role }}">{{ current_user.role }}</span>
+        </div>
+      </div>
+      <a href="/logout" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Cerrar Sesión</a>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <nav class="sidebar-nav">
+        <!-- Casos (Visible for all roles) -->
+        <a href="/casos" class="nav-item {% if active_page == 'casos' %}active{% endif %}">
+          <span class="nav-icon">📋</span> Casos de Fraude
+        </a>
+
+        <!-- Admin panel (Visible for admin and auditor) -->
+        {% if current_user.role == 'admin' or current_user.role == 'auditor' %}
+        <a href="/admin" class="nav-item {% if active_page == 'admin' %}active{% endif %}">
+          <span class="nav-icon">⚙️</span> Configuración
+        </a>
+        {% endif %}
+
+        <!-- Auditor panel (Visible only for auditor) -->
+        {% if current_user.role == 'auditor' %}
+        <a href="/auditor" class="nav-item {% if active_page == 'auditor' %}active{% endif %}">
+          <span class="nav-icon">🔍</span> Auditoría y Métricas
+        </a>
+        {% endif %}
+      </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <div class="container-fluid">
+        {% block content %}{% endblock %}
+      </div>
+      <!-- Footer -->
+      <footer class="footer">
+        Centinela v1.0.0 &copy; 2026 — Plataforma de Detección de Fraude Transaccional en Tiempo Real.
+      </footer>
+    </main>
+  </div>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>
