@@ -16,8 +16,8 @@ from api.models import (
 from api.admin import router as admin_router
 from api.middleware import AuthAndSecurityMiddleware, JWT_SECRET, JWT_ALGORITHM
 
-# Create upload directory
-UPLOAD_DIR = "frontend/static/uploads"
+# Create upload directory (must be in /tmp, app dir is read-only in Azure Functions)
+UPLOAD_DIR = "/tmp/uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 app = FastAPI(title="Centinela API & Frontend")
@@ -28,7 +28,8 @@ app.include_router(admin_router)
 # Register middleware
 app.add_middleware(AuthAndSecurityMiddleware)
 
-# Mount static files and setup templates
+# Mount uploads first (more specific path), then rest of static files
+app.mount("/static/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
 
 # Use a Jinja2 Environment directly to avoid the unhashable-dict cache bug
